@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Weather App</title>
+  <link rel="stylesheet" href="style.css">
+   </head>
+<body bgcolor="yellow">
+  <div class="container">
+    <h1>Weather App</h1>
+    <form id="weatherForm">
+      <input type="text" id="cityInput" placeholder="Enter city name" required>
+      <button type="submit" class="btn">Get Weather</button>
+    </form>
+    <div class="weather-info" id="weatherInfo"></div>
+  </div>
+  
+  <script>
+    document.getElementById('weatherForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var city = document.getElementById('cityInput').value;
+      getWeather(city);
+    });
+    
+    function getWeather(city) {
+      var apiKey = '8fd2e92075a20e10de1380f017df50ec';
+      fetch('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + apiKey)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(data) {
+          displayWeather(data);
+        })
+        .catch(function(error) {
+          console.log(error);
+          document.getElementById('weatherInfo').innerHTML = 'Error fetching weather data.';
+        });
+    }
+    
+    function displayWeather(data) {
+      var weatherInfo = document.getElementById('weatherInfo');
+      
+      if (data.cod === '404') {
+        weatherInfo.innerHTML = 'City not found.';
+      } else {
+        var weatherIcon = data.weather[0].icon;
+        var temperature = data.main.temp;
+        var description = data.weather[0].description;
+        
+        weatherInfo.innerHTML = `
+          <img src="http://openweathermap.org/img/w/${weatherIcon}.png" alt="Weather Icon" class="weather-icon">
+          <p class="temperature">${Math.round(temperature - 273.15)}°C</p>
+          <p class="description">${description}</p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
